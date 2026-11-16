@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 520" role="img" aria-label="Rainy weekend window with a warm lamp, mug, and open book">
+  <defs>
+    <linearGradient id="rainGlass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B9B96"/>
+      <stop offset="100%" stop-color="#BCC7BE"/>
+    </linearGradient>
+    <radialGradient id="lampGlow" cx="0.22" cy="0.3" r="0.65">
+      <stop offset="0%" stop-color="#FFDFA8" stop-opacity="0.72"/>
+      <stop offset="100%" stop-color="#FFDFA8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="520" fill="#EAE0D2"/>
+  <rect x="85" y="48" width="430" height="310" fill="url(#rainGlass)"/>
+  <!-- Soft trees outside -->
+  <circle cx="170" cy="240" r="85" fill="#6F8076" opacity="0.55"/>
+  <circle cx="280" cy="220" r="98" fill="#627369" opacity="0.52"/>
+  <circle cx="420" cy="255" r="90" fill="#77887D" opacity="0.55"/>
+  <!-- Rain streaks -->
+  <g stroke="#F7FAF8" stroke-width="2" stroke-linecap="round" opacity="0.48">
+    <line x1="130" y1="78" x2="120" y2="132"/><line x1="210" y1="95" x2="198" y2="165"/>
+    <line x1="310" y1="68" x2="296" y2="148"/><line x1="415" y1="88" x2="404" y2="155"/>
+    <line x1="165" y1="190" x2="155" y2="258"/><line x1="355" y1="180" x2="342" y2="262"/>
+    <line x1="465" y1="140" x2="454" y2="220"/><line x1="255" y1="230" x2="245" y2="305"/>
+  </g>
+  <!-- Window mullions -->
+  <rect x="85" y="48" width="430" height="310" fill="none" stroke="#6E5A4F" stroke-width="12"/>
+  <line x1="300" y1="48" x2="300" y2="358" stroke="#6E5A4F" stroke-width="8"/>
+  <line x1="85" y1="205" x2="515" y2="205" stroke="#6E5A4F" stroke-width="8"/>
+  <!-- Warm indoor glow -->
+  <rect width="600" height="520" fill="url(#lampGlow)"/>
+  <!-- Wooden sill -->
+  <rect x="42" y="356" width="516" height="28" rx="4" fill="#9E765B"/>
+  <rect x="0" y="384" width="600" height="136" fill="#DDD0C0"/>
+  <!-- Open book -->
+  <path d="M135,340 Q200,322 252,344 L252,418 Q195,396 130,412 Z" fill="#FFFDF9" stroke="#C9B8A5" stroke-width="2"/>
+  <path d="M252,344 Q306,322 368,340 L372,412 Q308,396 252,418 Z" fill="#FAF4EA" stroke="#C9B8A5" stroke-width="2"/>
+  <line x1="156" y1="360" x2="226" y2="356" stroke="#B6A596" stroke-width="2"/>
+  <line x1="156" y1="374" x2="228" y2="370" stroke="#B6A596" stroke-width="2"/>
+  <line x1="274" y1="358" x2="344" y2="362" stroke="#B6A596" stroke-width="2"/>
+  <line x1="274" y1="372" x2="340" y2="376" stroke="#B6A596" stroke-width="2"/>
+  <!-- Ceramic mug with steam -->
+  <path d="M418,302 L478,302 L473,356 C473,364 423,364 423,356 Z" fill="#C44D67"/>
+  <path d="M477,312 C496,312 496,342 475,342" fill="none" stroke="#C44D67" stroke-width="6"/>
+  <path d="M438,288 Q430,270 442,254" fill="none" stroke="#FFFDF9" stroke-width="3" stroke-linecap="round" opacity="0.72"/>
+  <path d="M458,286 Q466,266 454,248" fill="none" stroke="#FFFDF9" stroke-width="3" stroke-linecap="round" opacity="0.65"/>
+</svg>
+

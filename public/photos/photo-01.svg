@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 520" role="img" aria-label="Afternoon sun across a wooden café table with two iced coffees">
+  <defs>
+    <linearGradient id="wall1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F6EAD9"/>
+      <stop offset="100%" stop-color="#E7CEB2"/>
+    </linearGradient>
+    <linearGradient id="table1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#B98763"/>
+      <stop offset="100%" stop-color="#8C5E40"/>
+    </linearGradient>
+    <linearGradient id="sunbeam" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFDF9" stop-opacity="0.58"/>
+      <stop offset="100%" stop-color="#FFF5E4" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="520" fill="url(#wall1)"/>
+  <polygon points="0,0 320,0 520,340 160,340" fill="url(#sunbeam)"/>
+  <rect y="310" width="600" height="210" fill="url(#table1)"/>
+  <line x1="0" y1="358" x2="600" y2="358" stroke="#7A4F34" stroke-opacity="0.25" stroke-width="2"/>
+  <line x1="0" y1="435" x2="600" y2="435" stroke="#7A4F34" stroke-opacity="0.2" stroke-width="2"/>
+  <!-- Napkin -->
+  <polygon points="225,382 365,372 385,455 245,468" fill="#FAF5EE" stroke="#DFD2C0" stroke-width="2"/>
+  <path d="M256,412 Q285,402 315,414 T352,406" fill="none" stroke="#8C6E63" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  <!-- Left glass -->
+  <ellipse cx="195" cy="378" rx="46" ry="12" fill="#6F472E" opacity="0.26"/>
+  <path d="M158,210 L232,210 L220,370 C220,378 170,378 170,370 Z" fill="#FFFDF9" fill-opacity="0.65" stroke="#D7C3AE" stroke-width="2"/>
+  <path d="M164,250 L226,250 L218,366 C218,373 172,373 172,366 Z" fill="#6B4432" opacity="0.88"/>
+  <path d="M162,248 Q195,264 228,248 L226,276 Q195,290 164,276 Z" fill="#F2E4D1" opacity="0.82"/>
+  <rect x="176" y="230" width="16" height="16" rx="3" transform="rotate(-12 184 238)" fill="#FFFDF9" opacity="0.72"/>
+  <rect x="198" y="236" width="14" height="14" rx="3" transform="rotate(14 205 243)" fill="#FFFDF9" opacity="0.68"/>
+  <line x1="205" y1="158" x2="188" y2="335" stroke="#C44D67" stroke-width="5" stroke-linecap="round"/>
+  <!-- Right glass -->
+  <ellipse cx="408" cy="390" rx="44" ry="11" fill="#6F472E" opacity="0.24"/>
+  <path d="M372,226 L442,226 L432,382 C432,390 382,390 382,382 Z" fill="#FFFDF9" fill-opacity="0.65" stroke="#D7C3AE" stroke-width="2"/>
+  <path d="M378,266 L436,266 L429,378 C429,385 385,385 385,378 Z" fill="#8C593E" opacity="0.88"/>
+  <path d="M376,264 Q407,280 438,264 L436,294 Q407,308 378,294 Z" fill="#F7ECDC" opacity="0.86"/>
+  <line x1="395" y1="176" x2="416" y2="345" stroke="#5F7560" stroke-width="5" stroke-linecap="round"/>
+  <!-- Dried sprig in small bud vase -->
+  <ellipse cx="305" cy="322" rx="22" ry="7" fill="#6F472E" opacity="0.22"/>
+  <path d="M292,248 Q284,320 305,320 Q326,320 318,248 Z" fill="#D9B9A6" stroke="#B78F79" stroke-width="1.5"/>
+  <path d="M305,248 Q298,195 278,150" fill="none" stroke="#6B745D" stroke-width="2.5"/>
+  <path d="M305,248 Q314,190 336,162" fill="none" stroke="#6B745D" stroke-width="2.2"/>
+  <circle cx="278" cy="148" r="7" fill="#C44D67"/>
+  <circle cx="290" cy="176" r="5" fill="#D57A89"/>
+  <circle cx="336" cy="160" r="6" fill="#C44D67"/>
+</svg>
+

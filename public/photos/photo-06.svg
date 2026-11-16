@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 520" role="img" aria-label="Evening balcony with warm string lights, two chairs, and dried roses">
+  <defs>
+    <linearGradient id="night6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#31242B"/>
+      <stop offset="65%" stop-color="#5B3F4A"/>
+      <stop offset="100%" stop-color="#B06E6D"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="520" fill="url(#night6)"/>
+  <!-- Stars -->
+  <g fill="#FFF5E6" opacity="0.75">
+    <circle cx="96" cy="82" r="2"/><circle cx="182" cy="54" r="1.5"/><circle cx="312" cy="70" r="2"/>
+    <circle cx="430" cy="48" r="2.2"/><circle cx="512" cy="96" r="1.5"/>
+  </g>
+  <!-- String lights -->
+  <path d="M0,98 Q150,152 300,118 T600,104" fill="none" stroke="#2B2023" stroke-width="2.5"/>
+  <g fill="#FFE4A3">
+    <circle cx="72" cy="116" r="8"/><circle cx="150" cy="132" r="8"/><circle cx="232" cy="128" r="8"/>
+    <circle cx="316" cy="116" r="8"/><circle cx="406" cy="126" r="8"/><circle cx="496" cy="118" r="8"/>
+  </g>
+  <g fill="#FFE4A3" opacity="0.22">
+    <circle cx="72" cy="116" r="22"/><circle cx="150" cy="132" r="22"/><circle cx="232" cy="128" r="22"/>
+    <circle cx="316" cy="116" r="22"/><circle cx="406" cy="126" r="22"/><circle cx="496" cy="118" r="22"/>
+  </g>
+  <!-- Balcony railing -->
+  <rect y="365" width="600" height="155" fill="#2A1F23"/>
+  <line x1="0" y1="305" x2="600" y2="305" stroke="#423238" stroke-width="8"/>
+  <line x1="60" y1="305" x2="60" y2="365" stroke="#423238" stroke-width="5"/>
+  <line x1="180" y1="305" x2="180" y2="365" stroke="#423238" stroke-width="5"/>
+  <line x1="300" y1="305" x2="300" y2="365" stroke="#423238" stroke-width="5"/>
+  <line x1="420" y1="305" x2="420" y2="365" stroke="#423238" stroke-width="5"/>
+  <line x1="540" y1="305" x2="540" y2="365" stroke="#423238" stroke-width="5"/>
+  <!-- Small bistro table -->
+  <line x1="300" y1="340" x2="300" y2="448" stroke="#6E5A4F" stroke-width="6"/>
+  <ellipse cx="300" cy="340" rx="58" ry="12" fill="#E8D8C6"/>
+  <!-- Vase with 6th-year roses -->
+  <path d="M289,302 L311,302 L307,338 L293,338 Z" fill="#FAF5EE"/>
+  <path d="M300,302 L292,272 M300,302 L308,274" stroke="#5F7560" stroke-width="2.5"/>
+  <circle cx="291" cy="270" r="8" fill="#C44D67"/>
+  <circle cx="309" cy="272" r="7" fill="#D87A8D"/>
+  <!-- Left & right chair backs -->
+  <path d="M135,286 C135,252 210,252 210,286 L210,362 L135,362 Z" fill="#9E765B"/>
+  <path d="M390,286 C390,252 465,252 465,286 L465,362 L390,362 Z" fill="#9E765B"/>
+</svg>
+
