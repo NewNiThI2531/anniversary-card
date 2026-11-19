@@ -29,10 +29,7 @@ export interface AnniversaryConfig {
   startDateIso: string;
   startDateDisplay: string;
   lockScreen: {
-    eyebrow: string;
     title: string;
-    subtitle: string;
-    hint: string;
     boxLabels: readonly [string, string, string];
     submitLabel: string;
   };
@@ -44,7 +41,6 @@ export interface AnniversaryConfig {
     boardSubtitle: string;
     letterSectionTitle: string;
     timelineTitle: string;
-    footerNote: string;
   };
   photos: readonly PhotoMemory[];
   letter: {
@@ -65,25 +61,20 @@ export const anniversaryConfig: AnniversaryConfig = {
   startDateIso: '2020-11-20T00:00:00+07:00',
   startDateDisplay: 'November 20, 2020',
   lockScreen: {
-    eyebrow: 'AnniversaryBox · Private Keepsake',
-    title: 'NEW & FERN',
-    subtitle:
-      'Enter our three two-digit numbers to open the scrapbook.',
-    hint: 'Hint: Three quiet numbers only the two of us remember — 2 digits per box.',
+    title: 'Log in to Card',
     boxLabels: ['First', 'Second', 'Third'],
-    submitLabel: 'Open AnniversaryBox',
+    submitLabel: "Let's Go",
   },
   celebration: {
     heading: 'Slow mornings, late trains, and always coming home to you.',
     subheading:
-      'Nothing flashy here—just our running clock since day one, the countdown to every November 20, a board of snapshots, and a letter kept on cream paper.',
+      'Nothing flashy here—just our running clock since day one, the countdown to every November 20, and the chapters we have shared so far.',
     counterTitle: 'Time Together Since November 20, 2020',
     boardTitle: 'Pinned Snapshots',
     boardSubtitle:
       'Tap any polaroid to look closer—swap these mock frames in public/photos/ whenever you are ready.',
     letterSectionTitle: 'A Note on Cream Paper',
     timelineTitle: 'Chapters So Far',
-    footerNote: 'AnniversaryBox · Made by hand for NEW & FERN.',
   },
   photos: [
     {

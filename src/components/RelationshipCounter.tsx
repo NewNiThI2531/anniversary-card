@@ -13,6 +13,7 @@ interface RelationshipCounterProps {
 
 function formatShortDate(date: Date): string {
   return date.toLocaleDateString('en-US', {
+    timeZone: 'Asia/Bangkok',
     month: 'short',
     day: 'numeric',
     year: 'numeric',

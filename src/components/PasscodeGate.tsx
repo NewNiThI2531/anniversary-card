@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from 'react';
-import { AlertCircle, ArrowRight, Check, Lock } from 'lucide-react';
+import { AlertCircle, ArrowRight, Check } from 'lucide-react';
 import type { AnniversaryConfig } from '../data/anniversaryConfig';
 import { distributePastedDigits } from '../utils/elapsedTime';
 
@@ -8,16 +8,9 @@ type BoxStatus = 'idle' | 'error' | 'matched';
 interface PasscodeGateProps {
   config: AnniversaryConfig;
   onUnlock: () => void;
-  reduceMotion: boolean;
-  onToggleMotion: () => void;
 }
 
-export function PasscodeGate({
-  config,
-  onUnlock,
-  reduceMotion,
-  onToggleMotion,
-}: PasscodeGateProps) {
+export function PasscodeGate({ config, onUnlock }: PasscodeGateProps) {
   const baseId = useId();
   const [values, setValues] = useState<[string, string, string]>(['', '', '']);
   const [boxStatus, setBoxStatus] = useState<
@@ -46,7 +39,6 @@ export function PasscodeGate({
       return next;
     });
 
-    // Clear existing error state on that box as soon as user edits it
     setBoxStatus((prev) => {
       if (prev[index] === 'idle' && errorMessage === '') return prev;
       const next: [BoxStatus, BoxStatus, BoxStatus] = [
@@ -180,7 +172,11 @@ export function PasscodeGate({
       const boxNames = emptyIndices
         .map((i) => config.lockScreen.boxLabels[i])
         .join(' & ');
-      setErrorMessage(`${boxNames} box is still empty — 2 digits per box.`);
+      setErrorMessage(
+        `${boxNames} ${
+          emptyIndices.length === 1 ? 'box is' : 'boxes are'
+        } still empty — 2 digits per box.`
+      );
     } else if (partialIndices.length > 0) {
       const boxNames = partialIndices
         .map((i) => config.lockScreen.boxLabels[i])
@@ -200,23 +196,10 @@ export function PasscodeGate({
     focusBox(firstBadIndex);
   };
 
-  const hintId = `${baseId}-hint`;
   const errorId = `${baseId}-error`;
 
   return (
     <main className="gate-shell">
-      <div className="top-utility-bar">
-        <span className="utility-stamp">{config.brandName}</span>
-        <button
-          type="button"
-          className="motion-toggle"
-          onClick={onToggleMotion}
-          aria-pressed={!reduceMotion}
-        >
-          {reduceMotion ? 'Motion: Still paper' : 'Motion: Gentle'}
-        </button>
-      </div>
-
       <section
         className="gate-card"
         aria-labelledby={`${baseId}-heading`}
@@ -228,21 +211,24 @@ export function PasscodeGate({
               : 'even'
         }
       >
-        <div className="gate-seal" aria-hidden="true">
-          <Lock size={16} strokeWidth={1.75} />
-          <span>{config.brandName}</span>
+        <div className="gate-header">
+          <img
+            src="/logo-gift-card.png"
+            alt=""
+            width={72}
+            height={72}
+            className="gate-logo"
+            aria-hidden="true"
+          />
+          <h1 id={`${baseId}-heading`} className="gate-title">
+            {config.lockScreen.title}
+          </h1>
         </div>
-
-        <p className="eyebrow">{config.lockScreen.eyebrow}</p>
-        <h1 id={`${baseId}-heading`} className="gate-title">
-          {config.lockScreen.title}
-        </h1>
-        <p className="gate-subtitle">{config.lockScreen.subtitle}</p>
 
         <form onSubmit={handleSubmit} noValidate className="passcode-form">
           <fieldset
             className="passcode-fieldset"
-            aria-describedby={errorMessage ? `${hintId} ${errorId}` : hintId}
+            aria-describedby={errorMessage ? errorId : undefined}
           >
             <legend className="visually-hidden">
               Three-part numeric passcode
@@ -309,10 +295,6 @@ export function PasscodeGate({
             </div>
           </fieldset>
 
-          <p id={hintId} className="passcode-hint">
-            {config.lockScreen.hint}
-          </p>
-
           <div
             id={errorId}
             role="status"
@@ -336,4 +318,3 @@ export function PasscodeGate({
     </main>
   );
 }
-

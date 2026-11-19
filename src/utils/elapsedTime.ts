@@ -21,14 +21,37 @@ export interface CountdownBreakdown {
 export interface AnniversaryState {
   elapsed: ElapsedBreakdown;
   countdown: CountdownBreakdown;
-  /** True on the calendar anniversary month & day (after year 1+) */
+  /** True on the calendar anniversary month & day in Asia/Bangkok (+07:00) */
   isAnniversaryToday: boolean;
-  /** The year number being celebrated right now (e.g. 6 on 21/11/2026, 7 on 21/11/2027) */
+  /** The year number being celebrated right now (e.g. 6 on 20/11/2026, 7 on 20/11/2027) */
   activeAnniversaryYear: number;
 }
 
+const BANGKOK_OFFSET_MS = 7 * 60 * 60 * 1000;
+
+interface CalendarParts {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+}
+
+function toBangkokParts(date: Date): CalendarParts {
+  const shifted = new Date(date.getTime() + BANGKOK_OFFSET_MS);
+  return {
+    year: shifted.getUTCFullYear(),
+    month: shifted.getUTCMonth(),
+    day: shifted.getUTCDate(),
+    hour: shifted.getUTCHours(),
+    minute: shifted.getUTCMinutes(),
+    second: shifted.getUTCSeconds(),
+  };
+}
+
 function getDaysInMonth(year: number, monthIndex: number): number {
-  return new Date(year, monthIndex + 1, 0).getDate();
+  return new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
 }
 
 export function formatOrdinal(n: number): string {
@@ -72,8 +95,8 @@ export function toRomanNumeral(num: number): string {
 
 /**
  * Computes calendar-accurate elapsed Years, Months, Days, Hours, Minutes,
- * Seconds, and total elapsed days between `startDate` and `now`, accounting
- * for leap years and differing month lengths (28/29/30/31 days).
+ * Seconds, and total elapsed days between `startDate` and `now` anchored to
+ * Asia/Bangkok (+07:00), accounting for leap years and variable month lengths.
  */
 export function calculateElapsedTime(
   startDate: Date,
@@ -93,9 +116,12 @@ export function calculateElapsedTime(
     };
   }
 
-  let seconds = now.getSeconds() - startDate.getSeconds();
-  let minutes = now.getMinutes() - startDate.getMinutes();
-  let hours = now.getHours() - startDate.getHours();
+  const start = toBangkokParts(startDate);
+  const current = toBangkokParts(now);
+
+  let seconds = current.second - start.second;
+  let minutes = current.minute - start.minute;
+  let hours = current.hour - start.hour;
   let dayBorrow = 0;
 
   if (seconds < 0) {
@@ -111,34 +137,27 @@ export function calculateElapsedTime(
     dayBorrow = 1;
   }
 
-  const adjNow = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() - dayBorrow
+  const adjNowDate = new Date(
+    Date.UTC(current.year, current.month, current.day - dayBorrow)
   );
+  const adjYear = adjNowDate.getUTCFullYear();
+  const adjMonth = adjNowDate.getUTCMonth();
+  const adjDay = adjNowDate.getUTCDate();
 
   let totalMonths =
-    (adjNow.getFullYear() - startDate.getFullYear()) * 12 +
-    (adjNow.getMonth() - startDate.getMonth());
+    (adjYear - start.year) * 12 + (adjMonth - start.month);
 
-  if (adjNow.getDate() < startDate.getDate()) {
+  if (adjDay < start.day) {
     totalMonths -= 1;
   }
   totalMonths = Math.max(0, totalMonths);
 
-  const targetMonthTotal = startDate.getMonth() + totalMonths;
-  const anchorYear = startDate.getFullYear() + Math.floor(targetMonthTotal / 12);
+  const targetMonthTotal = start.month + totalMonths;
+  const anchorYear = start.year + Math.floor(targetMonthTotal / 12);
   const anchorMonth = ((targetMonthTotal % 12) + 12) % 12;
-  const anchorDay = Math.min(
-    startDate.getDate(),
-    getDaysInMonth(anchorYear, anchorMonth)
-  );
+  const anchorDay = Math.min(start.day, getDaysInMonth(anchorYear, anchorMonth));
 
-  const utcAdjNow = Date.UTC(
-    adjNow.getFullYear(),
-    adjNow.getMonth(),
-    adjNow.getDate()
-  );
+  const utcAdjNow = Date.UTC(adjYear, adjMonth, adjDay);
   const utcAnchor = Date.UTC(anchorYear, anchorMonth, anchorDay);
   const days = Math.max(0, Math.round((utcAdjNow - utcAnchor) / 86_400_000));
 
@@ -159,37 +178,39 @@ export function calculateElapsedTime(
 }
 
 function getAnniversaryDateForYear(startDate: Date, nthYear: number): Date {
-  const targetYear = startDate.getFullYear() + nthYear;
+  const start = toBangkokParts(startDate);
+  const targetYear = start.year + nthYear;
   const clampedDay = Math.min(
-    startDate.getDate(),
-    getDaysInMonth(targetYear, startDate.getMonth())
+    start.day,
+    getDaysInMonth(targetYear, start.month)
   );
-  return new Date(
-    targetYear,
-    startDate.getMonth(),
-    clampedDay,
-    startDate.getHours(),
-    startDate.getMinutes(),
-    startDate.getSeconds(),
-    0
-  );
+  const utcMs =
+    Date.UTC(
+      targetYear,
+      start.month,
+      clampedDay,
+      start.hour,
+      start.minute,
+      start.second
+    ) - BANGKOK_OFFSET_MS;
+  return new Date(utcMs);
 }
 
 /**
  * Computes both the live elapsed relationship time AND the rolling countdown
- * to the next anniversary milestone (e.g. 6th on 21/11/2026 -> automatically
- * switches to 7th on 21/11/2027 once 21/11/2026 arrives).
+ * to the next anniversary milestone anchored to Asia/Bangkok (+07:00).
  */
 export function calculateAnniversaryState(
   startDate: Date,
   now: Date
 ): AnniversaryState {
   const elapsed = calculateElapsedTime(startDate, now);
+  const start = toBangkokParts(startDate);
+  const current = toBangkokParts(now);
 
   let targetYearNumber = Math.max(1, elapsed.years + 1);
   let targetDate = getAnniversaryDateForYear(startDate, targetYearNumber);
 
-  // Guard against boundary seconds where targetDate <= now
   while (targetDate.getTime() <= now.getTime()) {
     targetYearNumber += 1;
     targetDate = getAnniversaryDateForYear(startDate, targetYearNumber);
@@ -204,11 +225,9 @@ export function calculateAnniversaryState(
 
   const isAnniversaryToday =
     elapsed.years >= 1 &&
-    now.getMonth() === startDate.getMonth() &&
-    now.getDate() === startDate.getDate();
+    current.month === start.month &&
+    current.day === start.day;
 
-  // Before the 6th anniversary (at 5y 11m), display upcoming year 6 in header;
-  // once 6+ years are completed, display the live completed year (6, then 7, etc.).
   const activeAnniversaryYear =
     elapsed.years >= 1 && elapsed.months === 0 && elapsed.days === 0
       ? elapsed.years
@@ -232,11 +251,9 @@ export function calculateAnniversaryState(
 }
 
 /**
- * Returns the dynamic hero headline:
- * - Every November before the anniversary day (Nov 1–19):
- *   "Countdown to Happy Anniversary <N>th years"
- * - Every November on/after the anniversary day (Nov 20–30):
- *   "Happy Anniversary <N>th years"
+ * Returns the dynamic hero headline anchored to Asia/Bangkok (+07:00):
+ * - Every November (Nov 1–30): "Happy Anniversary <N>th years"
+ *   (upcoming year before Nov 20, completed year on/after Nov 20).
  * - All other months (Dec–Oct): the configured editorial headline.
  */
 export function getSeasonalHeroHeading(
@@ -245,17 +262,27 @@ export function getSeasonalHeroHeading(
   state: AnniversaryState,
   defaultHeading: string
 ): string {
-  const isAnniversaryMonth = now.getMonth() === startDate.getMonth();
-  if (!isAnniversaryMonth) {
+  const start = toBangkokParts(startDate);
+  const current = toBangkokParts(now);
+
+  if (current.month !== start.month) {
     return defaultHeading;
   }
 
-  if (now.getDate() < startDate.getDate()) {
-    return `Countdown to Happy Anniversary ${formatOrdinal(state.countdown.targetYearNumber)} years`;
-  }
+  const displayYear =
+    current.day < start.day
+      ? state.countdown.targetYearNumber
+      : Math.max(1, state.elapsed.years);
 
-  const celebratedYear = Math.max(1, state.elapsed.years);
-  return `Happy Anniversary ${formatOrdinal(celebratedYear)} years`;
+  return `Happy Anniversary ${formatOrdinal(displayYear)} years`;
+}
+
+export function getBangkokYear(date: Date): number {
+  return toBangkokParts(date).year;
+}
+
+export function isSameBangkokMonth(a: Date, b: Date): boolean {
+  return toBangkokParts(a).month === toBangkokParts(b).month;
 }
 
 export interface PastedDistributionResult {

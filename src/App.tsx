@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Lock } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { anniversaryConfig } from './data/anniversaryConfig';
 import { PasscodeGate } from './components/PasscodeGate';
 import { RelationshipCounter } from './components/RelationshipCounter';
-import { PolaroidBoard } from './components/PolaroidBoard';
-import { PhotoLightbox } from './components/PhotoLightbox';
-import { LoveLetter } from './components/LoveLetter';
 import { RelationshipTimeline } from './components/RelationshipTimeline';
+import { AmbientBackdrop } from './components/AmbientBackdrop';
+import { TypewriterHeading } from './components/TypewriterHeading';
 import { runViewTransition } from './utils/viewTransitions';
 import {
   calculateAnniversaryState,
-  formatOrdinal,
+  getBangkokYear,
   getSeasonalHeroHeading,
+  isSameBangkokMonth,
   toRomanNumeral,
 } from './utils/elapsedTime';
 
@@ -20,13 +20,26 @@ function getInitialReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
+function isPreviewMode20(): boolean {
+  if (!import.meta.env.DEV || typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('preview') === '20';
+}
+
+function getPreviewTimeOffsetMs(): number {
+  if (!isPreviewMode20()) return 0;
+  return new Date('2026-11-20T09:00:00+07:00').getTime() - Date.now();
+}
+
 export function App() {
-  const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
-  const [activePhotoId, setActivePhotoId] = useState<string | null>(null);
+  const previewNov20 = useMemo(() => isPreviewMode20(), []);
+  const [isUnlocked, setIsUnlocked] = useState<boolean>(previewNov20);
   const [reduceMotion, setReduceMotion] = useState<boolean>(
     getInitialReducedMotion
   );
-  const [now, setNow] = useState<Date>(() => new Date());
+  const previewOffsetMs = useMemo(() => getPreviewTimeOffsetMs(), []);
+  const [now, setNow] = useState<Date>(
+    () => new Date(Date.now() + previewOffsetMs)
+  );
 
   const startDate = useMemo(
     () => new Date(anniversaryConfig.startDateIso),
@@ -35,10 +48,10 @@ export function App() {
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
-      setNow(new Date());
+      setNow(new Date(Date.now() + previewOffsetMs));
     }, 1000);
     return () => window.clearInterval(intervalId);
-  }, []);
+  }, [previewOffsetMs]);
 
   const anniversaryState = useMemo(
     () => calculateAnniversaryState(startDate, now),
@@ -46,7 +59,6 @@ export function App() {
   );
 
   const celebrationHeadingRef = useRef<HTMLHeadingElement | null>(null);
-  const lastPolaroidTriggerRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     document.documentElement.dataset.reduceMotion = reduceMotion
@@ -78,7 +90,6 @@ export function App() {
   }, [reduceMotion]);
 
   const handleLock = useCallback(() => {
-    setActivePhotoId(null);
     runViewTransition(
       () => {
         setIsUnlocked(false);
@@ -94,38 +105,20 @@ export function App() {
     );
   }, [reduceMotion]);
 
-  const handleSelectPhoto = useCallback(
-    (photoId: string, triggerElement: HTMLButtonElement) => {
-      lastPolaroidTriggerRef.current = triggerElement;
-      setActivePhotoId(photoId);
-    },
-    []
-  );
-
-  const handleCloseLightbox = useCallback(() => {
-    setActivePhotoId(null);
-    requestAnimationFrame(() => {
-      lastPolaroidTriggerRef.current?.focus();
-    });
-  }, []);
-
   if (!isUnlocked) {
     return (
-      <PasscodeGate
-        config={anniversaryConfig}
-        onUnlock={handleUnlock}
-        reduceMotion={reduceMotion}
-        onToggleMotion={() => setReduceMotion((prev) => !prev)}
-      />
+      <>
+        <AmbientBackdrop
+          mode="gate"
+          isGrandAnniversary={anniversaryState.isAnniversaryToday}
+          reduceMotion={reduceMotion}
+        />
+        <PasscodeGate config={anniversaryConfig} onUnlock={handleUnlock} />
+      </>
     );
   }
 
   const activeRoman = toRomanNumeral(anniversaryState.activeAnniversaryYear);
-  const activeOrdinal = formatOrdinal(anniversaryState.activeAnniversaryYear);
-  const dynamicEyebrow =
-    anniversaryState.elapsed.years >= 6
-      ? `${anniversaryConfig.brandName} · ${activeOrdinal} Year Together`
-      : `${anniversaryConfig.brandName} · Approaching ${activeOrdinal} Anniversary`;
   const heroHeading = getSeasonalHeroHeading(
     startDate,
     now,
@@ -133,14 +126,27 @@ export function App() {
     anniversaryConfig.celebration.heading
   );
 
+  const isAnniversaryMonth = isSameBangkokMonth(now, startDate);
+
   return (
-    <div className="celebration-shell">
+    <>
+      <AmbientBackdrop
+        mode="celebration"
+        isGrandAnniversary={anniversaryState.isAnniversaryToday}
+        reduceMotion={reduceMotion}
+      />
+      <div className="celebration-shell">
       <header className="editorial-topbar">
         <div className="editorial-topbar-inner">
           <div className="topbar-identity">
-            <span className="topbar-monogram" aria-hidden="true">
-              AB
-            </span>
+            <img
+              src="/logo-gift-card.png"
+              alt=""
+              width={42}
+              height={42}
+              className="topbar-logo"
+              aria-hidden="true"
+            />
             <div className="topbar-meta">
               <span className="topbar-names">
                 {anniversaryConfig.brandName} · {anniversaryConfig.coupleNames}
@@ -154,37 +160,26 @@ export function App() {
           <div className="topbar-actions">
             <button
               type="button"
-              className="motion-toggle"
-              onClick={() => setReduceMotion((prev) => !prev)}
-              aria-pressed={!reduceMotion}
-            >
-              {reduceMotion ? 'Motion: Still paper' : 'Motion: Gentle'}
-            </button>
-            <button
-              type="button"
               className="lock-return-btn"
               onClick={handleLock}
             >
-              <Lock size={15} strokeWidth={1.85} aria-hidden="true" />
-              <span>Lock</span>
+              <LogOut size={15} strokeWidth={1.85} aria-hidden="true" />
+              <span>Log Out</span>
             </button>
           </div>
         </div>
       </header>
 
       <main className="celebration-main">
-        <section className="hero-editorial">
-          <p className="eyebrow">{dynamicEyebrow}</p>
-          <h1
-            ref={celebrationHeadingRef}
-            tabIndex={-1}
-            className="hero-heading"
-          >
-            {heroHeading}
-          </h1>
-          <p className="hero-subheading">
-            {anniversaryConfig.celebration.subheading}
-          </p>
+        <section
+          className={`hero-editorial ${isAnniversaryMonth ? 'is-anniversary-hero' : ''}`}
+        >
+          <TypewriterHeading
+            text={heroHeading}
+            reduceMotion={reduceMotion}
+            isAnniversaryHeadline={isAnniversaryMonth}
+            headingRef={celebrationHeadingRef}
+          />
         </section>
 
         <RelationshipCounter
@@ -194,38 +189,16 @@ export function App() {
           state={anniversaryState}
         />
 
-        <PolaroidBoard
-          title={anniversaryConfig.celebration.boardTitle}
-          subtitle={anniversaryConfig.celebration.boardSubtitle}
-          photos={anniversaryConfig.photos}
-          onSelectPhoto={handleSelectPhoto}
-        />
-
-        <LoveLetter
-          sectionTitle={anniversaryConfig.celebration.letterSectionTitle}
-          stampLabel={activeRoman}
-          letter={anniversaryConfig.letter}
-        />
-
         <RelationshipTimeline
           title={anniversaryConfig.celebration.timelineTitle}
-          milestones={anniversaryConfig.timeline}
+          startYear={getBangkokYear(startDate)}
+          completedYears={anniversaryState.elapsed.years}
+          targetYearNumber={anniversaryState.countdown.targetYearNumber}
+          reduceMotion={reduceMotion}
         />
       </main>
-
-      <footer className="editorial-footer">
-        <div className="footer-divider" aria-hidden="true" />
-        <p>{anniversaryConfig.celebration.footerNote}</p>
-      </footer>
-
-      <PhotoLightbox
-        photos={anniversaryConfig.photos}
-        activePhotoId={activePhotoId}
-        onClose={handleCloseLightbox}
-        onNavigate={setActivePhotoId}
-        reduceMotion={reduceMotion}
-      />
-    </div>
+      </div>
+    </>
   );
 }
 
